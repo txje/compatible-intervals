@@ -6,9 +6,15 @@
 # uberScan: overlapping maximal-size intervals
 # To compute Max-k intervals from Uber intervals, see compatinv.py
 
+def rlScan(snpList, pessimistic=False):
+  snpList.reverse()
+  invs, groups = lrScan(snpList, pessimistic)
+  snpList.reverse()
+  last = len(snpList) - 1
+  return [(last-i[1], last-i[0]) for i in invs[::-1]], groups # groups may be reversed (wrong)
 
 # returns l->r intervals for snpList (hap or genotype)
-def leftScan(snpList, pessimistic=False):
+def lrScan(snpList, pessimistic=False):
     # 0 - incompatible, 1 - out of phase, 2 - compatible, 3 - in phase, 4 - either
     start = 0
     intervals = []
@@ -229,11 +235,10 @@ def uberScan(snpList, pessimistic=False):
                 break
         if compatible:
             break
-        
+
         intervals.append((start,end-1))
-        #removeSNP(genGroups, end) #SHIT!!!!!!
         inv_groupings.append(removeSNP(genGroups, end))
-        
+
         # backtrack
         genGroups = [[] for i in range(len(snpList[0]))]
         blueGroups = [[] for i in xrange(len(snpList[0]))]
@@ -249,7 +254,7 @@ def uberScan(snpList, pessimistic=False):
             if not compatible:
                 break
         start = new_start+1
-        
+
     intervals.append((start, end))
     inv_groupings.append(genGroups)
     return intervals, inv_groupings
@@ -260,7 +265,8 @@ def uberScan(snpList, pessimistic=False):
 # -----------------------------------------
 
 # returns compatibility of sdp1 vs sdp2
-def compatible(sdp1, sdp2, pessimistic=False):    
+# Ns *should* not cause any problems, they just won't add any incompatibility
+def compatible(sdp1, sdp2, pessimistic=False):
     # Returns 0 if they are incompatible
     # 1 if they may be (must be 01, 10 to be compatible)
     # 2 if they are compatible

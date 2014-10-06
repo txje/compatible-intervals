@@ -18,9 +18,9 @@ import time # for testing
 # aggressive BRANCH AND BOUND
 # returns (cost, seen, removed, done) where done can be a value 0 (impossible), 1 (possible), or 2 (achieved/done)
 def MVC(node, E, weights, rootseen=[], tabs=0, costSoFar=0, r=float("inf")):
-    
+
 #    print ''.join(' ' for a in xrange(tabs)), node, "seen", rootseen
-    
+
     # keep this node
     keepcost = float("inf")
     keep_nodes_removed = []
@@ -46,7 +46,7 @@ def MVC(node, E, weights, rootseen=[], tabs=0, costSoFar=0, r=float("inf")):
             if done == 0: # impossible (this can't be kept)
                 keepcost = float("inf")
                 break
-    
+
     # remove this node
     remove_seen = [s for s in rootseen] + [node]
 #    print ''.join(' ' for a in xrange(tabs)), "removing", node, "costs", weights[node], "seen", remove_seen
@@ -59,12 +59,12 @@ def MVC(node, E, weights, rootseen=[], tabs=0, costSoFar=0, r=float("inf")):
             removed.append(E.pop(i))
         else:
             i += 1
-    
+
     if len(E) == 0: # no more edges, great!
         # BOUND
         if costSoFar+removecost <= r: # under our threshold, great!
             return removecost, remove_seen, remove_nodes_removed, 2 # 2 means done!
-        
+
     elif costSoFar+removecost < r: # only need to check this if it's going to be possible, we have to be able to remove at least one more SNP
 #        print ''.join(' ' for a in xrange(tabs)), "removed to check", removed
         for e in removed: # recurse through all edges (although hereafter removed)
@@ -81,19 +81,19 @@ def MVC(node, E, weights, rootseen=[], tabs=0, costSoFar=0, r=float("inf")):
             if done == 0: # impossible
                 removecost = float("inf")
                 break
-    
+
     else: # there are edges and the total cost is >= r, so we can't remove this one
         removecost = float("inf")
-    
+
     E.extend(removed) # add edges back
-    
+
 #    print ''.join(' ' for a in xrange(tabs)), seen
-    
+
     if min(costSoFar+keepcost, costSoFar+removecost) > r:
         status = 0 # impossible
     else:
         status = 1 # possible, but not yet definitive
-    
+
     if keepcost <= removecost: # err on the side of keeping
 #        print ''.join(' ' for a in xrange(tabs)), "keep", node, "(", weights[node], ") cost", keepcost
         return keepcost, keep_seen, keep_nodes_removed, status # cost of nodes removed, nodes seen under this thread (don't do them again)
@@ -128,24 +128,24 @@ def subgraphs(E):
 # Test it with a couple graphs with nonobvious solutions and one with a cycle
 if __name__ == "__main__":
     V = [0, 1, 2, 3, 4, 5, 6, 7] # not used
-    
+
     E = [(0, 1), (1, 2),
          (3, 4), (3, 5), (4, 5), (5, 6)]
     print "All edges:", E
-    
+
     weights = {0:1, 1:5, 2:1, 3:1, 4:2, 5:1, 6:10, 7:1}
     print "Weights:", weights
-    
+
     # should split into 2 groups:
     # {0, 1, 2} {3, 4, 5, 6} (7 does not appear)
     # then remove {0, 2} at a cost of 2, and {3, 5} at a cost of 2
-    
+
     print "Breaking into groups via subgraphs() ..."
     t0 = time.time()
     edge_groups, vertex_groups = subgraphs(E)
     t1 = time.time()
     print "Runtime: %.2f ms" % ((t1-t0) * 1000)
-    
+
     score = 0
     for i in xrange(len(edge_groups)):
         print "\nGroup", i
@@ -156,5 +156,5 @@ if __name__ == "__main__":
         print "MVC nodes to remove:", result[2], "(score: %i)" % result[0]
         print "Runtime: %.2f ms" % ((t3-t2) * 1000)
         score += result[0]
-    
+
     print "\nFull graph MVC score: %i" % score
