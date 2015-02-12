@@ -1,0 +1,12 @@
+snp pos sample0 sample1 sample2 sample3 sample4 sample5 sample6 sample7 sample8 sample9
+s0 10 A A A A T T T T T T
+s1 20 C C A A A A A A A A
+s2 30 C C C G G G G G G G
+s3 40 G G G G G G T G G G
+s4 60 T T A A T T T T T T
+s5 80 G T T T T T T T T T
+s6 120 G T T T T G G G G T
+s7 160 A G G G G A A A A A
+s8 320 G T T T T G G G G T
+s9 480 C C C C G C C C C C
+s10 1024 C C C C G G G C C C

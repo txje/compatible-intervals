@@ -9,7 +9,7 @@ def writeIntervals(intervals, outfile):
     fout.write("\n%i,%i" % (i[0], i[1]))
   fout.close()
 
-def main(input, pos, sample, delimiter, prefix, outdir, cr=None, verbose=False):
+def main(input, pos, sample, delimiter, prefix, cr, verbose=False):
 
   snpList = hapmap.loadSNPmatrix(input, verbose=verbose, delimiter=delimiter, pos_idx=pos, sample_idx=sample, filter_positions=None)
 
@@ -20,7 +20,7 @@ def main(input, pos, sample, delimiter, prefix, outdir, cr=None, verbose=False):
       geno = True
       break
 
-  if cr is None or cr == 0:
+  if cr == 0:
     if geno:
       uber, groups = genotype_intervals.uberScan(snpList)
       writeIntervals(uber, prefix + ".uber_intervals.csv")
@@ -85,7 +85,7 @@ if __name__ == "__main__":
   parser.add_argument("sample", type=int, help="Field index of first sample in input file")
   parser.add_argument("delimiter", help="RE string to delimit lines in the input")
   parser.add_argument("prefix", help="Output prefix")
-  parser.add_argument("--cr", type=int, help="Use character removal, with the given number removed")
+  parser.add_argument("--cr", type=int, help="Use character removal, with the given number removed", default=0)
   parser.add_argument("--verbose", action="store_true", help="Print verbose output", default=False)
   args = parser.parse_args()
   main(args.input, args.pos, args.sample, args.delimiter, args.prefix, args.cr, args.verbose)
